@@ -23,12 +23,7 @@ Prefer just one skill? Each can be installed on its own (see the per-skill notes
 
 ### Installing a single skill
 
-```sh
-# just the Georgian → English bridge (standalone repo)
-npx skills add kakha13/georgian-bridge
-```
-
-Or clone this repo and copy the folder you want into `~/.claude/skills/`.
+Clone this repo and copy the folder you want (e.g. `skills/georgian-bridge`) into `~/.claude/skills/`.
 
 ## About the `spelling-and-grammar` "always-on" behavior
 

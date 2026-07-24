@@ -40,25 +40,17 @@ This skill ships as part of the [`kakha13/skills`](https://github.com/kakha13/sk
 
 ### Recommended — via [skills.sh](https://skills.sh)
 
-Install the whole collection (recommended):
-
 ```sh
 npx skills add kakha13/skills
 ```
 
-Or install just this skill from the standalone repo:
+### Manual — just this skill
+
+Clone the collection and copy this folder into the Claude Code skills directory:
 
 ```sh
-npx skills add kakha13/georgian-bridge
-```
-
-### Manual
-
-Clone straight into the Claude Code skills directory:
-
-```sh
-git clone https://github.com/kakha13/georgian-bridge \
-  ~/.claude/skills/georgian-bridge
+git clone https://github.com/kakha13/skills /tmp/kakha13-skills
+cp -R /tmp/kakha13-skills/skills/georgian-bridge ~/.claude/skills/georgian-bridge
 ```
 
 Either way, Claude Code picks up new skills on the next session — no restart of an existing session needed. Verify by starting a new session and typing a Georgian phrase: the reply should come back in English with no translation echo.
