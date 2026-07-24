@@ -1,6 +1,10 @@
 ---
 name: georgian-bridge
 description: Use whenever the user's message contains Georgian script (ქართული — Mkhedruli, Unicode U+10A0–U+10FF). Silently translate every Georgian segment to English using a professional-translator persona, merge with any English that was already in the message, and treat the resulting English prompt as the authoritative request — the "moment of truth." Trigger on any Georgian characters at all, even a single Georgian word inside an otherwise English sentence. Always reply in English. Never echo the translation back to the user.
+license: MIT
+metadata:
+  author: kakha13
+  version: '1.0.0'
 ---
 
 # Georgian → English bridge

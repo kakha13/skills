@@ -1,6 +1,10 @@
 ---
 name: spelling-and-grammar
 description: Use whenever the user writes to you in English — before acting on their message, check it for grammar and spelling errors. If there are any, point them out visually (❌ error → ✅ fix), show the corrected version, then treat the corrected version as the actual request and proceed. If the message is clean, say nothing about it and just proceed. Applies to every English message, every time — not only when the user asks for a proofread.
+license: MIT
+metadata:
+  author: kakha13
+  version: '1.0.0'
 ---
 
 # Spelling & grammar

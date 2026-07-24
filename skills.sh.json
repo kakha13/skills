@@ -1,0 +1,14 @@
+{
+  "$schema": "https://skills.sh/schemas/skills.sh.schema.json",
+  "notGrouped": "bottom",
+  "groupings": [
+    {
+      "title": "Language",
+      "description": "Writing and language helpers — ambient English proofreading and a Georgian → English input bridge.",
+      "skills": [
+        "spelling-and-grammar",
+        "georgian-bridge"
+      ]
+    }
+  ]
+}

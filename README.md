@@ -35,6 +35,9 @@ Skills are invoked when their description matches the current task, which is rel
 .
 ├── README.md                       — this file
 ├── LICENSE                         — MIT
+├── skills.sh.json                  — skills.sh grouping / display config
+├── .github/
+│   └── FUNDING.yml                 — sponsor links
 ├── .claude-plugin/
 │   ├── plugin.json                 — plugin manifest (lists each skill's path)
 │   └── marketplace.json            — marketplace / discovery metadata
@@ -49,9 +52,14 @@ Skills are invoked when their description matches the current task, which is rel
 
 ## Adding a new skill
 
-1. Create `skills/<skill-name>/SKILL.md` with YAML frontmatter (`name`, `description`) followed by the instructions. The `description` is the trigger — write it so it clearly states *when* the skill should fire.
+1. Create `skills/<skill-name>/SKILL.md` with YAML frontmatter (`name`, `description`, and optionally `license` + `metadata.author/version`) followed by the instructions. The `description` is the trigger — write it so it clearly states *when* the skill should fire.
 2. Add `"./skills/<skill-name>"` to the `skills` array in [`.claude-plugin/plugin.json`](./.claude-plugin/plugin.json).
-3. Add a row to the **Skills** table above.
+3. Add the skill's slug to a group in [`skills.sh.json`](./skills.sh.json) so it's grouped correctly on [skills.sh](https://www.skills.sh/docs) (or leave it out to fall under `notGrouped`).
+4. Add a row to the **Skills** table above.
+
+## Support
+
+If these skills save you time, you can [buy me a coffee](https://buymeacoffee.com/kakha13) ☕.
 
 ## License
 
