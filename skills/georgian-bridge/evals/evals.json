@@ -1,0 +1,37 @@
+{
+  "skill_name": "georgian-bridge",
+  "evals": [
+    {
+      "id": 1,
+      "name": "pure-georgian-debug",
+      "prompt": "ეს კოდი როცა გავუშვი ბრაუზერში, ერორი ამოიგდო: TypeError: Cannot read property 'name' of undefined. რა შეიძლება იყოს მიზეზი და როგორ გავასწორო?",
+      "expected_output": "Agent explains likely causes of the TypeError (accessing .name on an undefined object) in clear English. No Georgian text in the response. No echoed translation of the prompt. Reply does not say things like 'Translation: ...' or 'EN: ...' or 'I understood you to mean'.",
+      "files": [],
+      "assertions": []
+    },
+    {
+      "id": 2,
+      "name": "mixed-georgian-english",
+      "prompt": "i'm getting an error: TypeError: Cannot read property 'name' of undefined. რა შეიძლება იყოს მიზეზი და როგორ გავასწორო ეს ერორი?",
+      "expected_output": "Agent explains the TypeError causes/fixes in English. Treats the merged English prompt as authoritative. The English portion 'i'm getting an error...' is preserved untouched. No translation echo, no quoted Georgian, reply fully in English.",
+      "files": [],
+      "assertions": []
+    },
+    {
+      "id": 3,
+      "name": "single-georgian-phrase-in-english",
+      "prompt": "explain this code to me ცოტა დეტალურად: const doubled = [1, 2, 3].map(x => x * 2)",
+      "expected_output": "Agent explains the .map call in English, somewhat detailed (matching 'ცოტა დეტალურად' = 'a bit in detail'). No translation echo. No Georgian in response. Code identifier 'doubled' kept verbatim.",
+      "files": [],
+      "assertions": []
+    },
+    {
+      "id": 4,
+      "name": "negative-pure-english",
+      "prompt": "explain this code to me in a bit of detail: const doubled = [1, 2, 3].map(x => x * 2)",
+      "expected_output": "Agent explains the .map call in English. Skill should not activate (no Georgian). Behavior should be normal — comparable to baseline. No translation framing or extra preamble.",
+      "files": [],
+      "assertions": []
+    }
+  ]
+}

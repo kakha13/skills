@@ -1,0 +1,10 @@
+# macOS
+.DS_Store
+
+# Editor scratch
+*.swp
+*~
+
+# Local-only eval workspaces
+/iteration-*/
+**/iteration-*/

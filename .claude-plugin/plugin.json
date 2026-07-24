@@ -1,0 +1,26 @@
+{
+  "name": "kakha13-skills",
+  "version": "0.1.0",
+  "description": "Kakha Giorgashvili's collection of Claude Code / agent skills — language and writing helpers, and more.",
+  "author": {
+    "name": "Kakha Giorgashvili",
+    "url": "https://github.com/kakha13"
+  },
+  "homepage": "https://github.com/kakha13/skills",
+  "repository": "https://github.com/kakha13/skills",
+  "license": "MIT",
+  "keywords": [
+    "claude-code",
+    "skills",
+    "agent-skills",
+    "grammar",
+    "spelling",
+    "georgian",
+    "translation",
+    "language"
+  ],
+  "skills": [
+    "./skills/spelling-and-grammar",
+    "./skills/georgian-bridge"
+  ]
+}

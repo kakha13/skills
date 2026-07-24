@@ -1,0 +1,24 @@
+{
+  "name": "kakha13",
+  "owner": {
+    "name": "Kakha Giorgashvili",
+    "url": "https://github.com/kakha13"
+  },
+  "description": "Kakha Giorgashvili's skills for Claude Code, as an installable plugin.",
+  "plugins": [
+    {
+      "name": "kakha13-skills",
+      "source": "./",
+      "description": "Language and writing skills for Claude Code — ambient spelling/grammar correction and a Georgian → English input bridge.",
+      "category": "productivity",
+      "keywords": [
+        "grammar",
+        "spelling",
+        "georgian",
+        "translation",
+        "language",
+        "writing"
+      ]
+    }
+  ]
+}
