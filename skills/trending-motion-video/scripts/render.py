@@ -8,7 +8,7 @@ storyboard["output"]. Ken Burns motion, crossfades with a light flash, word-by-w
 paced to the voiceover, progress bar, original music + SFX ducked under the voice.
 --preview renders 3 still frames to <project>/preview.jpg instead of the video.
 """
-import json, math, os, shutil, subprocess, sys, wave
+import json, math, os, re, shutil, subprocess, sys, wave
 from multiprocessing import Pool, cpu_count
 
 import numpy as np
@@ -72,13 +72,16 @@ def ease_out_back(t):
 
 
 def parse_words(text):
-    """'*word*' or '*two words*' = highlighted in the accent color."""
+    """'*word*' or '*two words*' = highlighted in the accent color.
+    Punctuation may follow the closing asterisk: '*see them*?' highlights 'them?'."""
     out, hl = [], False
     for tok in text.split():
-        if tok.startswith("*"):
+        m = re.match(r"^(\*?)(.*?)(\*?)([^\w*]*)$", tok)
+        opens, word, closes, punct = m.groups()
+        if opens:
             hl = True
-        out.append((tok.strip("*"), hl))
-        if tok.endswith("*"):
+        out.append((word + punct, hl))
+        if closes:
             hl = False
     return out
 
