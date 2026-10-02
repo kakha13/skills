@@ -1,7 +1,7 @@
 {
   "name": "kakha13-skills",
-  "version": "0.1.0",
-  "description": "Kakha Giorgashvili's collection of Claude Code / agent skills — language and writing helpers, and more.",
+  "version": "0.2.0",
+  "description": "Kakha Giorgashvili's collection of Claude Code / agent skills: language and writing helpers, and a trending-topic motion video maker.",
   "author": {
     "name": "Kakha Giorgashvili",
     "url": "https://github.com/kakha13"
@@ -17,10 +17,18 @@
     "spelling",
     "georgian",
     "translation",
-    "language"
+    "language",
+    "video",
+    "motion-video",
+    "tiktok",
+    "reels",
+    "shorts",
+    "codex",
+    "voiceover"
   ],
   "skills": [
     "./skills/spelling-and-grammar",
-    "./skills/georgian-bridge"
+    "./skills/georgian-bridge",
+    "./skills/trending-motion-video"
   ]
 }

@@ -1,0 +1,94 @@
+{
+  "title": "Google Project Suncatcher",
+  "output": "project_suncatcher.mp4",
+  "brand": "Space Tech  ·  Trending Today",
+  "accent": "#FFB840",
+  "style": "cinematic semi-realistic digital painting, deep midnight navy and teal shadows with warm amber-gold sunlight highlights, volumetric light rays, subtle film grain, high detail, soft bloom, clean composition with empty negative space in the lower third",
+  "voice": "en-US-AndrewNeural",
+  "rate": "+6%",
+  "music": {
+    "mood": "epic",
+    "bpm": 100,
+    "level": 0.5
+  },
+  "sources": [
+    "https://www.npr.org/2026/10/01/nx-s1-5983697/project-suncatcher-google-ai-data-center-space",
+    "https://www.opb.org/article/2026/10/01/google-launches-project-suncatcher-a-step-towards-ai-data-centers-in-space/",
+    "https://www.cnbc.com/2026/10/01/spacex-to-launch-google-ai-chips-to-orbit-with-planet-labs-satellites.html"
+  ],
+  "scenes": [
+    {
+      "image_query": "satellite orbit Earth",
+      "image_prompt": "a sleek refrigerator-sized satellite with large golden solar wings floating in low Earth orbit, the curved blue Earth below, the sun flaring brightly on the horizon behind it, a faint glow of computer circuitry visible through a small window on the satellite body",
+      "kicker": "Just launched",
+      "main": "Google just launched *AI chips* into *orbit*",
+      "sub": "Project Suncatcher  ·  October 2026",
+      "vo": "Google just launched A.I. chips into orbit.",
+      "sfx": "telemetry"
+    },
+    {
+      "image_query": "computer chip circuit board",
+      "image_prompt": "extreme close-up inside an open satellite body: four glowing AI processor chips on a dark circuit board, warm amber light pulsing along the traces, Earth's blue curve softly reflected on the metal casing",
+      "kicker": "The satellite",
+      "main": "*4 TPU chips* inside a fridge-sized satellite",
+      "sub": "Built with Planet  ·  running Google's Gemini",
+      "vo": "It's called Project Suncatcher: a fridge-sized satellite carrying four Google TPU chips.",
+      "sfx": "compute"
+    },
+    {
+      "image_query": "Falcon 9 launch",
+      "image_prompt": "a Falcon 9 style rocket lifting off at dawn from a coastal launch pad, huge plume of glowing exhaust and billowing clouds, ocean and palm silhouettes, rocket shown from a low heroic angle, unbranded",
+      "kicker": "The ride",
+      "main": "Launched on a *SpaceX* Falcon 9 rideshare",
+      "sub": "Transporter-18 mission  ·  this week",
+      "vo": "It rode to space this week, on a SpaceX Falcon 9.",
+      "sfx": "rocket"
+    },
+    {
+      "image_query": "Earth terminator from space",
+      "image_prompt": "a satellite gliding along the day-night terminator of Earth in a sun-synchronous orbit, its golden solar panels bathed in constant sunlight while the planet below is half in night with city lights, the sun as a bright star",
+      "kicker": "Why space?",
+      "main": "In the right orbit the *sun never sets*",
+      "sub": "Nonstop solar power, almost no batteries",
+      "vo": "Why space? In the right orbit, the sun never sets. That means nonstop solar power.",
+      "sfx": "sparkle"
+    },
+    {
+      "image_query": "satellite radiator panel",
+      "image_prompt": "a satellite in the vacuum of space with its chips overheating: large radiator panels glowing deep orange-red with heat shimmer, dark empty space around it, tension and danger, the cold blue Earth far below",
+      "kicker": "The catch",
+      "main": "There's *no air* to cool the chips",
+      "sub": "So Gemini runs in 15-minute bursts",
+      "vo": "The catch? There's no air up there to cool the chips, so the A.I. runs in short, fifteen-minute bursts.",
+      "sfx": "alarm",
+      "music": "breakdown"
+    },
+    {
+      "image_query": "satellite constellation",
+      "image_prompt": "a futuristic tight cluster of dozens of satellites flying in formation above Earth, connected to each other by thin glowing amber laser beams, forming a giant orbital data center grid, epic wide view",
+      "kicker": "The dream",
+      "main": "Satellite clusters linked by *lasers*",
+      "sub": "2 more test satellites planned next year",
+      "vo": "The dream: huge clusters of satellites, linked together by lasers.",
+      "sfx": "lasers",
+      "music": "lift"
+    },
+    {
+      "image_query": "SpaceX Starship",
+      "image_prompt": "a race in orbit: several different futuristic satellites and a large spacecraft streaking across space above Earth, each leaving light trails, sense of competition and speed, dramatic sun flare",
+      "kicker": "The race",
+      "main": "The *space AI race* is officially on",
+      "sub": "SpaceX and Starcloud are building it too",
+      "vo": "And Google isn't alone. SpaceX and Starcloud are racing to build this too.",
+      "sfx": "flyby"
+    },
+    {
+      "image_query": "astronaut Moon surface",
+      "image_prompt": "a lone astronaut silhouette standing on a lunar ridge looking up at a glowing ring of orbital data-center satellites encircling the distant Earth, hopeful and awe-inspiring, wide cinematic",
+      "kicker": "The verdict",
+      "main": "Not cheaper soon. But the future is *up there*",
+      "sub": "Would you trust AI running in space?",
+      "vo": "It won't be cheaper any time soon. But the future of A.I. might be up there. Would you trust it?"
+    }
+  ]
+}
