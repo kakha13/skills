@@ -20,6 +20,7 @@ Prefer just one skill? Each can be installed on its own (see the per-skill notes
 |---|---|
 | [`spelling-and-grammar`](./skills/spelling-and-grammar) | Ambient proofreading — checks your English messages for spelling/grammar mistakes before acting on them, shows a quick ❌ → ✅ fix, then proceeds with the corrected request. Silent when your message is already clean. |
 | [`georgian-bridge`](./skills/georgian-bridge) | For bilingual users who think in **ქართული** but want English out. Silently translates the Georgian parts of your prompt, treats the merged English as the real request, and replies in English — no translation echo. |
+| [`trending-motion-video`](./skills/trending-motion-video) | One sentence to a ready-to-post TikTok/Reels/Shorts video: researches and fact-checks a trending topic, uses real public-domain/CC photos first, then Codex-generated images, then Claude-drawn ones as a last resort, and renders a 1080x1920 MP4 with animated captions, neural voiceover, and original copyright-free music + sound effects. |
 
 ### Installing a single skill
 
@@ -44,9 +45,16 @@ Skills are invoked when their description matches the current task, which is rel
 └── skills/
     ├── spelling-and-grammar/
     │   └── SKILL.md
-    └── georgian-bridge/
+    ├── georgian-bridge/
+    │   ├── SKILL.md
+    │   ├── README.md
+    │   └── evals/evals.json
+    └── trending-motion-video/
         ├── SKILL.md
         ├── README.md
+        ├── scripts/             — fetch_images, gen_images, svg_to_png, voiceover, render, check, music, sfx
+        ├── assets/              — example frames for the README
+        ├── references/          — storyboard.example.json
         └── evals/evals.json
 ```
 

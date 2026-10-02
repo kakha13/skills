@@ -9,6 +9,13 @@
         "spelling-and-grammar",
         "georgian-bridge"
       ]
+    },
+    {
+      "title": "Video",
+      "description": "Content creation: research a trending topic and render a captioned, narrated vertical video with original music.",
+      "skills": [
+        "trending-motion-video"
+      ]
     }
   ]
 }

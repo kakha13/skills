@@ -9,7 +9,7 @@
     {
       "name": "kakha13-skills",
       "source": "./",
-      "description": "Language and writing skills for Claude Code — ambient spelling/grammar correction and a Georgian → English input bridge.",
+      "description": "Claude Code skills: ambient spelling/grammar correction, a Georgian → English input bridge, and a trending-topic vertical motion video maker (Codex images, voiceover, original music).",
       "category": "productivity",
       "keywords": [
         "grammar",
@@ -17,7 +17,11 @@
         "georgian",
         "translation",
         "language",
-        "writing"
+        "writing",
+        "video",
+        "tiktok",
+        "reels",
+        "shorts"
       ]
     }
   ]

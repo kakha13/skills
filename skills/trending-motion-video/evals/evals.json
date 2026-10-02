@@ -1,0 +1,55 @@
+{
+  "skill_name": "trending-motion-video",
+  "evals": [
+    {
+      "id": 1,
+      "name": "trending-today-open-ended",
+      "prompt": "research popular topic for today and make motion video with images and good captions. for images use codex cli to generate good nice same style images.",
+      "expected_output": "Agent searches today's news, picks a visual, non-tragic story and verifies facts in 2+ sources, writes storyboard.json (7-9 scenes, hook first, question last), runs gen_images.py in the background, voiceover.py, render.py --preview, render.py, check.py, looks at qa_frames.jpg, and delivers a 1080x1920 MP4 with a summary that lists sources and any softened facts.",
+      "files": [],
+      "assertions": [
+        "Uses WebSearch for current news before choosing a topic",
+        "Creates a storyboard.json with image_prompt, kicker, main, sub, vo per scene",
+        "Generates images through scripts/gen_images.py (Codex CLI), not another image API",
+        "Final MP4 is 1080x1920 and has an audio stream",
+        "Final message includes source URLs"
+      ]
+    },
+    {
+      "id": 2,
+      "name": "given-topic-no-research-pick",
+      "prompt": "make a 30 second reels video about the James Webb telescope's newest discovery, female voice, uplifting music",
+      "expected_output": "Agent skips topic picking but still verifies facts about the named discovery, sets voice to a female edge-tts voice (e.g. en-US-AriaNeural), sets music.mood to uplifting, keeps the total around 30s (about 6-7 short scenes), and renders and QA-checks the video.",
+      "files": [],
+      "assertions": [
+        "storyboard.json voice is a female voice",
+        "storyboard.json music.mood is 'uplifting'",
+        "Video duration is between 25 and 40 seconds"
+      ]
+    },
+    {
+      "id": 3,
+      "name": "iterate-one-scene",
+      "prompt": "the image in scene 5 looks off and the caption is too long, fix just that scene",
+      "expected_output": "Agent edits only scene 5 in storyboard.json (shorter main caption, revised image_prompt), regenerates only that image with gen_images.py --only 5, and re-renders. It does not regenerate the other images or voiceover lines.",
+      "files": [],
+      "assertions": [
+        "Runs gen_images.py with --only 5",
+        "Does not pass --force to gen_images.py"
+      ]
+    },
+    {
+      "id": 4,
+      "name": "real-images-first",
+      "prompt": "make a short about today's SpaceX launch with captions and voiceover",
+      "expected_output": "After research, agent runs fetch_images.py search before any generation, asks the user once before downloading thumbnails/images, looks at the candidate sheets, accepts only relevant, sharp, reusable-license (PD/CC0/CC BY/CC BY-SA) photos into image_source, runs fetch, then gen_images.py only for scenes still missing an image, with a photographic style so mixed scenes match. Final message includes credits.md content.",
+      "files": [],
+      "assertions": [
+        "Runs fetch_images.py search before gen_images.py",
+        "Asks the user before running fetch_images.py thumbs/fetch",
+        "Every image_source license is public domain, CC0, CC BY or CC BY-SA",
+        "Final message includes image credits"
+      ]
+    }
+  ]
+}

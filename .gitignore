@@ -8,3 +8,5 @@
 # Local-only eval workspaces
 /iteration-*/
 **/iteration-*/
+__pycache__/
+*.pyc
