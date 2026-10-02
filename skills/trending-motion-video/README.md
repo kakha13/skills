@@ -104,7 +104,7 @@ Everything is driven by one `storyboard.json` in the project folder. See the ful
 | `sfx_level` | overall sound-effects volume (default 1.0) |
 | scene `image_query` | 2-4 word search for a real photo |
 | scene `image_prompt` | subject for the AI fallback (no text, no real logos) |
-| scene `image_source` | filled in when a real photo is chosen: `url`, `license`, `credit`, `page` |
+| scene `image_source` | filled in when a real photo is chosen: `url`, `license`, `credit`, `page`; optional `band` (0.8 keeps a wide group shot fully visible) and `rotate` (e.g. 180) |
 | scene `kicker` / `main` / `sub` | label, headline (wrap key phrases in `*asterisks*`), supporting line |
 | scene `vo` | the spoken line; the scene's length follows it |
 | scene `sfx` | `telemetry`, `compute`, `rocket`, `sparkle`, `alarm`, `lasers`, `flyby`, `impact`, `glitch`, `typing`, `heartbeat` |
