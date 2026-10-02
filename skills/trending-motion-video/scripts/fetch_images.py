@@ -3,7 +3,7 @@
 
     python3 fetch_images.py search storyboard.json [--only 2,3] [--n 8]
     python3 fetch_images.py thumbs storyboard.json [--only 2,3]
-    python3 fetch_images.py fetch  storyboard.json [--force]
+    python3 fetch_images.py fetch  storyboard.json [--force] [--only 4]
 
 search  Queries Wikimedia Commons, NASA Image Library and Openverse with each scene's "image_query"
         (falls back to "image_prompt"). Keeps only licenses that allow reuse AND modification for
@@ -13,7 +13,8 @@ thumbs  Downloads small thumbnails of the candidates and builds candidates/NN_sh
         so you can LOOK at them before choosing.
 fetch   For every scene with "image_source": {"url", "license", "credit", "page"}, downloads the
         full image and fits it to 1024x1536 portrait at images/NN.png (cover-crop for portrait,
-        blurred-fill for landscape). Writes credits.md. Scenes without image_source are left for
+        blurred-fill for landscape). Optional per image: "band": 0.85 keeps a wide group shot
+        fully visible, "rotate": 180 turns an upside-down space photo. Writes credits.md. Scenes without image_source are left for
         gen_images.py, which only fills missing images.
 """
 import io, json, os, re, sys, urllib.error, urllib.parse, urllib.request
@@ -111,7 +112,9 @@ def rank(c):
 
 
 # ---------- fitting ----------
-def fit_portrait(im):
+def fit_portrait(im, band=1.25):
+    """band: landscape photo width relative to the frame. 1.25 leaves room for Ken Burns panning;
+    use ~0.85 for group shots so everyone stays visible after the renderer's zoom."""
     im = im.convert("RGB")
     ar = im.width / im.height
     if ar <= 0.8:  # portrait-ish: cover crop, slight upward bias
@@ -126,9 +129,9 @@ def fit_portrait(im):
     x, y = (bg.width - OUT_W) // 2, (bg.height - OUT_H) // 2
     bg = bg.crop((x, y, x + OUT_W, y + OUT_H)).filter(ImageFilter.GaussianBlur(40))
     bg = Image.blend(bg, Image.new("RGB", bg.size, (6, 10, 22)), 0.45)
-    fw = int(OUT_W * 1.25)  # a little wider than the frame; Ken Burns pans across it
+    fw = int(OUT_W * band)
     fg = im.resize((fw, round(im.height * fw / im.width)), Image.LANCZOS)
-    top = int(OUT_H * 0.36 - fg.height / 2)
+    top = int(OUT_H * 0.33 - fg.height / 2)
     mask = Image.new("L", fg.size, 255)
     fade = 40
     md = ImageDraw.Draw(mask)
@@ -200,6 +203,7 @@ def cmd_thumbs(root, sb, args):
 def cmd_fetch(root, sb, args):
     os.makedirs(os.path.join(root, "images"), exist_ok=True)
     credits = []
+    only = set(scene_ids(sb, args)) if "--only" in args else None
     for k, sc in enumerate(sb["scenes"]):
         src = sc.get("image_source")
         if not src:
@@ -209,13 +213,17 @@ def cmd_fetch(root, sb, args):
             continue
         out = os.path.join(root, "images", f"{k + 1:02d}.png")
         credits.append(f"- Scene {k + 1}: {src.get('credit', '?')}, {src['license']} - {src.get('page', src['url'])}")
-        if os.path.exists(out) and "--force" not in args:
+        if only is not None and k not in only:
+            continue
+        if os.path.exists(out) and "--force" not in args and only is None:
             print(f"[{k + 1:02d}] exists")
             continue
         im = Image.open(io.BytesIO(download_with_fallback(src["url"])))
         if min(im.size) < 600:
             print(f"[{k + 1:02d}] WARNING: only {im.width}x{im.height}, will look soft")
-        fit_portrait(im).save(out)
+        if src.get("rotate"):
+            im = im.rotate(src["rotate"], expand=True)
+        fit_portrait(im, src.get("band", 1.25)).save(out)
         print(f"[{k + 1:02d}] ok  {im.width}x{im.height} -> {OUT_W}x{OUT_H}  ({src['license']})")
     if credits:
         with open(os.path.join(root, "credits.md"), "w") as f:

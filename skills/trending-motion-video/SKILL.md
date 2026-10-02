@@ -208,6 +208,8 @@ the source URLs.
 | Hold a scene longer | `"dur": 5.0` on that scene (overrides the voiceover timing) |
 | Zoom direction / pan | `"kb": "in" or "out"`, `"pan": -1, 0 or 1` per scene |
 | Hear the music alone | `python3 $S/music.py uplifting` writes `music_preview.wav` |
+| Group photo gets cropped | `"band": 0.8` in that scene's `image_source`, plus `"kb": "out"`, `"pan": 0`; then `fetch_images.py fetch --only N` |
+| Space photo is upside down (logos read backwards) | `"rotate": 180` in `image_source`, then `fetch_images.py fetch --only N` |
 
 ## Project layout
 
