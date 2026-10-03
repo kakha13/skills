@@ -6,14 +6,16 @@
 - Scene 01 is generated first and becomes the STYLE ANCHOR: every other scene is generated with
   it attached (-i) so palette, lighting and rendering match across the set.
 - Existing images are skipped unless --force (or listed in --only), so re-runs are cheap.
-- If the configured Codex model is rejected for this account, retries with the first listed model
-  from ~/.codex/models_cache.json (override with CODEX_IMAGE_MODEL=...).
+- If the configured Codex model is rejected for this account, walks the models listed in
+  ~/.codex/models_cache.json until one is accepted (or uses only CODEX_IMAGE_MODEL=... when set).
+- A scene's optional "screen_text" is the only text Codex may draw (prices on a phone screen, a
+  receipt total); every other scene is generated with no text at all.
 - If Codex is not installed, or still fails after a retry, the scene is handed to CLAUDE: the
   script writes <project>/needs_claude.json and exits with code 2. Claude then draws each listed
   scene as images/NN.svg and runs svg_to_png.py (see SKILL.md, "Claude fallback").
 Logs: <project>/logs/img_NN.log
 """
-import json, os, shutil, subprocess, sys
+import json, os, shutil, subprocess, sys, threading
 from concurrent.futures import ThreadPoolExecutor
 
 TEMPLATE = """Use your built-in image generation tool to create ONE image and save it as a PNG at this exact path:
@@ -21,28 +23,37 @@ TEMPLATE = """Use your built-in image generation tool to create ONE image and sa
 (copy the generated file there). Portrait orientation 1024x1536 (vertical 2:3). Do nothing else.
 {ref_note}
 STYLE (shared by the whole series, follow exactly): {style}. Keep the lower third calm and dark enough for
-white caption text. No text, no letters, no numbers, no logos, no watermarks.
+white caption text. {text_rule}
 
 SUBJECT: {subject}
 """
+NO_TEXT = "No text, no letters, no numbers, no logos, no watermarks."
 REF_NOTE = ("The attached image is the STYLE REFERENCE for this series: match its color palette, lighting, "
             "rendering and mood exactly, but create a new composition for the subject below.\n")
 
 
-def fallback_model():
+def fallback_models():
+    """Models to try, in order, when Codex rejects the configured one."""
     if os.environ.get("CODEX_IMAGE_MODEL"):
-        return os.environ["CODEX_IMAGE_MODEL"]
+        return [os.environ["CODEX_IMAGE_MODEL"]]
     try:
         d = json.load(open(os.path.expanduser("~/.codex/models_cache.json")))
-        for m in d.get("models", []):
-            if m.get("visibility") == "list":
-                return m.get("slug") or m.get("id")
+        return [m.get("slug") or m.get("id") for m in d.get("models", []) if m.get("visibility") == "list"]
     except Exception:
-        pass
-    return None
+        return []
 
 
-STATE = {"model": os.environ.get("CODEX_IMAGE_MODEL")}
+def next_model(rejected):
+    """Mark `rejected` as unusable and switch every worker to the next listed model (None when exhausted)."""
+    with LOCK:
+        if STATE["model"] == rejected:
+            STATE["bad"].add(rejected)
+            STATE["model"] = next((m for m in fallback_models() if m not in STATE["bad"]), None)
+        return STATE["model"]
+
+
+LOCK = threading.Lock()
+STATE = {"model": os.environ.get("CODEX_IMAGE_MODEL"), "bad": set()}
 
 
 def run_codex(root, prompt, ref, log):
@@ -65,14 +76,25 @@ def run_codex(root, prompt, ref, log):
 def gen_one(root, sb, k, ref):
     n = f"{k + 1:02d}"
     path = os.path.join(root, "images", f"{n}.png")
+    screen_text = sb["scenes"][k].get("screen_text")
+    text_rule = (NO_TEXT if not screen_text else
+                 "The ONLY text allowed anywhere is this exact on-screen text, spelled character for character, "
+                 "crisp and legible, placed exactly as the subject describes: " + screen_text +
+                 ". No other text, no logos, no watermarks.")
     prompt = TEMPLATE.format(path=path, style=sb["style"], subject=sb["scenes"][k]["image_prompt"],
-                             ref_note=REF_NOTE if ref else "")
+                             ref_note=REF_NOTE if ref else "", text_rule=text_rule)
     log = os.path.join(root, "logs", f"img_{n}.log")
     for attempt in range(2):
+        used = STATE["model"]
         out = run_codex(root, prompt, ref, log)
-        if "not supported" in out and "model" in out and not os.environ.get("CODEX_IMAGE_MODEL"):
-            STATE["model"] = fallback_model()
-            print(f"[{n}] default Codex model rejected; retrying with {STATE['model']}", flush=True)
+        # a ChatGPT-account login rejects some listed models; walk the list until one is accepted
+        while "not supported" in out and "model" in out:
+            model = next_model(used)
+            if not model:
+                print(f"[{n}] Codex rejected every listed model", flush=True)
+                return False
+            print(f"[{n}] Codex model {used or '(default)'} rejected; retrying with {model}", flush=True)
+            used = model
             out = run_codex(root, prompt, ref, log)
         if os.path.exists(path) and os.path.getsize(path) > 10_000:
             print(f"[{n}] ok", flush=True)

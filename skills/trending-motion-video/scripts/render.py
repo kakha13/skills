@@ -5,7 +5,7 @@
 
 Reads <project>/images/NN.png and <project>/vo/NN.mp3 (optional), writes the MP4 named in
 storyboard["output"]. Ken Burns motion, crossfades with a light flash, word-by-word captions
-paced to the voiceover, progress bar, original music + SFX ducked under the voice.
+paced to the voiceover, optional progress bar and end logo, original music + SFX ducked under the voice.
 --preview renders 3 still frames to <project>/preview.jpg instead of the video.
 """
 import json, math, os, re, shutil, subprocess, sys, wave
@@ -256,7 +256,7 @@ def render_chrome(frame, gt):
     n, gap, top, m = len(scenes), 10, 70, 60
     seg = (W - 2 * m - gap * (n - 1)) / n
     acc = 0
-    for k, sc in enumerate(scenes):
+    for k, sc in enumerate(scenes if G["progress"] else []):
         x0 = m + k * (seg + gap)
         d.rounded_rectangle((x0, top, x0 + seg, top + 6), 3, fill=(255, 255, 255, 70))
         fill = clamp((gt - acc) / sc["dur"])
@@ -276,12 +276,29 @@ def render_chrome(frame, gt):
 
 
 # ---------- frames (run in worker processes) ----------
+def make_end_logo(root, cfg):
+    """Logo for the last scene, optionally on a white rounded card so a dark logo reads on any image."""
+    if not cfg or not cfg.get("path"):
+        return None
+    logo = Image.open(os.path.join(root, cfg["path"])).convert("RGBA")
+    w = int(cfg.get("width", 560))
+    logo = logo.resize((w, round(logo.height * w / logo.width)), Image.LANCZOS)
+    if not cfg.get("card", True):
+        return logo
+    pad = int(cfg.get("pad", 44))
+    card = Image.new("RGBA", (logo.width + 2 * pad, logo.height + 2 * pad), (0, 0, 0, 0))
+    ImageDraw.Draw(card).rounded_rectangle((0, 0, card.width - 1, card.height - 1), 48, fill=(255, 255, 255, 245))
+    card.alpha_composite(logo, (pad, pad))
+    return card
+
+
 def init_worker(sb_path):
     root, sb, scenes, starts, total, _ = load_project(sb_path)
-    G.update(scenes=scenes, starts=starts, total=total, brand=sb.get("brand", ""),
+    G.update(scenes=scenes, starts=starts, total=total, brand=sb.get("brand", ""), progress=sb.get("progress_bar", True),
              accent=hex_rgb(sb.get("accent", "#FFB840")),
              imgs=[load_scene_image(os.path.join(root, "images", f"{k + 1:02d}.png")) for k in range(len(scenes))],
              grad=make_gradient(), vig=make_vignette(),
+             logo=make_end_logo(root, sb.get("end_logo")), logo_cfg=sb.get("end_logo") or {},
              fonts=dict(main=first_font(HEAVY_FONTS, 112), sub=first_font(TEXT_FONTS, 40),
                         kick=first_font(TEXT_FONTS, 30), brand=first_font(TEXT_FONTS, 26),
                         credit=first_font(TEXT_FONTS, 22)))
@@ -310,6 +327,13 @@ def render_frame(fi):
     render_chrome(frame, gt)
     if last and t > sc["dur"] - 0.8:
         frame.alpha_composite(Image.new("RGBA", (W, H), (0, 0, 0, int(255 * clamp((t - sc["dur"] + 0.8) / 0.8)))))
+    if last and G["logo"] is not None:  # after the fade, so the brand stays bright to the last frame
+        at = G["logo_cfg"].get("at", sc["dur"] * 0.55)  # seconds into the last scene
+        a = clamp((t - at) / 0.4)
+        if a > 0:
+            logo = G["logo"].copy()
+            logo.putalpha(logo.getchannel("A").point(lambda v: int(v * ease_out(a))))
+            frame.alpha_composite(logo, ((W - logo.width) // 2, int(G["logo_cfg"].get("y", 520) + (1 - ease_out(a)) * 30)))
     return frame.convert("RGB").tobytes()
 
 
@@ -341,7 +365,7 @@ def make_audio(path, sb, scenes, starts, total, clips, sr=44100):
         env = np.zeros(n)
     mix = out * (1 - 0.5 * env)[:, None] + fx * (1 - 0.3 * env)[:, None] + voice[:, None]
     mix = np.tanh(mix * 1.05)
-    mix = mix / np.max(np.abs(mix)) * 0.9
+    mix = mix / np.max(np.abs(mix)) * 0.85  # headroom: AAC encoding overshoots a 0.9 peak past -0.3 dB
     with wave.open(path, "wb") as wf:
         wf.setnchannels(2); wf.setsampwidth(2); wf.setframerate(sr)
         wf.writeframes((mix * 32767).astype(np.int16).tobytes())
@@ -386,7 +410,8 @@ def main():
             if fi % 150 == 0:
                 print(f"frame {fi}/{nframes}", flush=True)
     ff.stdin.close()
-    ff.wait()
+    if ff.wait() != 0:
+        sys.exit(f"ffmpeg failed (exit {ff.returncode}); {out} is incomplete")
     os.remove(wav)
     print(f"done: {out} ({total:.1f}s, {len(scenes)} scenes)")
 
