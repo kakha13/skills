@@ -1,10 +1,10 @@
 ---
 name: trending-motion-video
-description: Use when the user wants a short vertical motion video (TikTok, Reels, Shorts) about a trending or news topic, or any topic - "research what's popular today and make a video", "make a motion video with images and captions", "faceless explainer video", "news short with voiceover". Researches and fact-checks the topic, writes a storyboard, finds real reusable (public domain / CC) images first, generates only the missing or doubtful ones with the Codex CLI, and has Claude draw any scene Codex can't, then renders a 1080x1920 MP4 with Ken Burns motion, animated word-by-word captions, neural voiceover, and an original copyright-free soundtrack and sound effects.
+description: Use when the user wants a short vertical motion video (TikTok, Reels, Shorts) about a trending or news topic, or any topic - "research what's popular today and make a video", "make a motion video with images and captions", "faceless explainer video", "news short with voiceover", or a price-led product ad / promo video for the user's own business ("make an ad for my site", "promo video with our prices"). Researches and fact-checks the topic, writes a storyboard, finds real reusable (public domain / CC) images first, generates only the missing or doubtful ones with the Codex CLI, and has Claude draw any scene Codex can't, then renders a 1080x1920 MP4 with Ken Burns motion, animated word-by-word captions, neural voiceover, and an original copyright-free soundtrack and sound effects.
 license: MIT
 metadata:
   author: kakha13
-  version: '1.2.0'
+  version: '1.3.0'
 ---
 
 # Trending motion video
@@ -46,6 +46,21 @@ Skip the picking part if the user named a topic.
 - If sources disagree on a detail (an exact date, a mission name), soften it on screen ("this week")
   and flag it in your final message. Never invent a number to fill a caption.
 
+### 1b. Product ads (when the video sells the user's own product)
+
+Skip this for news shorts. For an ad, the "facts" are the user's own prices and claims, and the
+research is what competitors' ads already do:
+
+- **Look at live competitor ads first.** Search the Meta Ad Library (the `ads_library_search` tool when
+  it is connected) for the product category in the target country. Note the recurring patterns: a
+  "from $X" price anchor, a bill-shock or pain framing, a list of options with prices, a discount code.
+- **Prices come from the user's own catalog, never from memory.** Query their store, API, MCP or
+  database, and use the same plan type across the board (for example 5GB / 30 days everywhere). Check
+  for a live public promo code: it makes a strong offer scene. Tell the user prices can drift.
+- **The competitor price needs 2+ sources**, like any news fact ("carrier day passes cost $12/day").
+- **Generate every image with Codex** (skip the real-photo search): ads need the product on screen,
+  which stock photos can't show. Put the prices and UI on the phone with `screen_text` (step 2).
+
 ### 2. Write `storyboard.json`
 
 Copy `references/storyboard.example.json` and replace its contents. Shape of a good short:
@@ -60,6 +75,22 @@ Copy `references/storyboard.example.json` and replace its contents. Shape of a g
 | 7 | Stakes / competition | "the race is on" |
 | 8 | Verdict + question for comments | "Would you trust AI in space?" |
 
+Shape of a good product ad (30-40 s, every scene shows the product or the price):
+
+| # | Beat | Example |
+|---|------|---------|
+| 1 | Hook: a twist line + the pain as a big number visible in frame 1 | "Your priciest souvenir? *Your phone bill*" over a receipt circled "$84.00" |
+| 2 | Price anchor: them vs us, side by side | two phones, red "$84" vs blue "$5.35" |
+| 3 | Real price board, 3-4 options | phone list: Japan $5.35, Turkey $4.64 ... |
+| 4 | How easy it is | "Scan the QR *before you fly*" |
+| 5 | The payoff moment | "*Online* the second you land" |
+| 6 | Offer (`"music": "lift"` or `sfx: sparkle`) | "Code *ESIMBUDDY* = *10% off*" |
+| 7 | CTA: an instruction, not a question, + `end_logo` | "Stop roaming. *cheaperesim.com*" / "Get your eSIM before you fly" |
+
+Hooks that fall flat: a small notification or UI banner (too much to read in 2 seconds), a moody
+image with no number in it, and a CTA phrased as a question ("Where are you flying next?") - fine
+for organic posts, weak for an ad.
+
 Field rules:
 
 - `style`: one shared art direction string (medium, palette, lighting, grain). It is sent with
@@ -67,6 +98,10 @@ Field rules:
 - `image_query`: 2-4 word search for a REAL photo of this scene ("Falcon 9 launch"), used in step 3.
 - `image_prompt`: the subject for the AI fallback, concrete and visual, no text in the image. Avoid
   real logos and real people's faces; describe "a Falcon 9 style rocket, unbranded" instead.
+- `screen_text` (optional): the exact text Codex may draw, for phone screens, receipts or price
+  tags, e.g. `"four rows: \"Japan 5GB $5.35\", \"Turkey 5GB $4.64\""`. Without it the image has no
+  text at all. Say where it goes in `image_prompt`, and keep it in the **upper half**: the captions
+  cover the lower third. Read every such image at full size and regenerate if a character is wrong.
 - `kicker`: 1-2 word label ("THE CATCH"). `main`: 9 words or fewer, wrap 1-2 key phrases in
   `*asterisks*` to highlight them in the accent color. `sub`: 45 characters or fewer, a supporting fact.
 - `vo`: 8-20 conversational words that expand on the caption rather than reading it out.
@@ -76,9 +111,14 @@ Field rules:
   `flyby` (speed/race), `impact` (big stat/shock), `glitch` (hacks/errors/deepfakes),
   `typing` (messages/code), `heartbeat` (health/suspense), or leave it out. The last scene always
   gets a final boom + chime on its last word.
-- Top level: `brand` (small label at the top), `accent` (hex), `voice` (edge-tts voice, e.g.
+- Top level: `brand` (small label at the top; `""` hides it), `progress_bar` (story-style bars at the
+  top, default `true`; ads look cleaner with `false`), `end_logo` (see below), `accent` (hex), `voice` (edge-tts voice, e.g.
   `en-US-AndrewNeural`, `en-US-AriaNeural`, `en-GB-RyanNeural`), `rate`, and
   `music: {mood: epic | uplifting | dark, bpm, level}`. Match the mood to the story.
+- `end_logo` (optional): `{"path": "logo.png", "at": 3.3, "y": 520, "width": 560, "card": true}`.
+  Fades the logo in `at` seconds into the last scene (time it just after the voiceover says the
+  name), on a white rounded card unless `"card": false`. It is drawn after the final fade to black,
+  so the brand stays bright to the last frame. Copy the logo file into the project folder.
 
 ### 3. Images: real photos, then Codex, then Claude
 
@@ -169,6 +209,8 @@ Read `preview.jpg` before the full render, then `qa_frames.jpg` after it. Check 
 inside the frame, highlights land on the right words, and no image clashes with its caption.
 Loudness should come out around -18 to -13 dB mean with the peak under 0 dB.
 
+Only one render may write an output file at a time: two at once leave an MP4 with no moov atom.
+
 ### 6. Deliver
 
 Send the MP4 to the user (use SendUserFile with `display: render` when it is available) and give a short summary:
@@ -178,6 +220,11 @@ any facts you softened or couldn't verify, and how to change things (edit `story
 `render.py`). Paste the contents of `credits.md` (for the post's caption or description), then end with
 the source URLs.
 
+For an ad, also hand over a ready-to-paste post caption: the hook line, the prices, 2-3 benefits,
+the code, the URL ("link in bio" on Instagram, where caption links don't work), a fine-print line
+("prices at time of posting"), and hashtags. Remind the user to switch on Meta's "AI info" label
+when the images are photorealistic AI, and to recheck prices on the day they post.
+
 ## Things that went wrong before (already handled in the scripts)
 
 - **Codex `-i` is variadic.** `codex exec -i ref.png "prompt"` treats the prompt as a second image
@@ -185,10 +232,16 @@ the source URLs.
 - **Codex unavailable or failing.** `gen_images.py` never blocks the video: scenes it can't make go
   to the Claude fallback (exit code 2 + `needs_claude.json`).
 - **The configured Codex model can be rejected** ("model is not supported when using Codex with
-  a ChatGPT account"). `gen_images.py` retries with the first listed model from
-  `~/.codex/models_cache.json`, or with `CODEX_IMAGE_MODEL`. Don't edit the user's Codex config.
+  a ChatGPT account"), and so can several listed ones. `gen_images.py` walks the models listed in
+  `~/.codex/models_cache.json` until one is accepted, or uses `CODEX_IMAGE_MODEL` alone when it is
+  set. Don't edit the user's Codex config.
 - **Captions placed too low get covered** by TikTok/Reels/Shorts buttons. The caption block is anchored
   from the bottom (ending at y=1560), so a 4-line caption grows upward.
+- **Text drawn low in an image disappears under the captions.** A receipt total generated at the
+  bottom of the frame was unreadable; `screen_text` scenes must say where the text sits (upper half).
+- **AAC overshoots the peak.** The mix is normalized to 0.85 (not 0.9) so the encoded peak stays
+  below -0.3 dB.
+- **A failed encode used to print "done".** `render.py` now exits non-zero when ffmpeg fails.
 - **Fonts move between macOS versions.** The renderer tries Avenir Next Condensed Heavy in several
   places, then falls back to Impact, then DejaVu (Linux).
 - **Image licenses:** `fetch_images.py` filters to public domain / CC0 / CC BY / CC BY-SA and refuses
@@ -209,6 +262,9 @@ the source URLs.
 | Zoom direction / pan | `"kb": "in" or "out"`, `"pan": -1, 0 or 1` per scene |
 | Hear the music alone | `python3 $S/music.py uplifting` writes `music_preview.wav` |
 | Group photo gets cropped | `"band": 0.8` in that scene's `image_source`, plus `"kb": "out"`, `"pan": 0`; then `fetch_images.py fetch --only N` |
+| Prices or UI on a phone screen | `"screen_text"` on that scene, then `gen_images.py --only N` |
+| Clean top edge (no bars, no label) | `"progress_bar": false`, `"brand": ""` |
+| Logo at the end | `"end_logo": {"path": "logo.png", "at": 3.3}` |
 | Space photo is upside down (logos read backwards) | `"rotate": 180` in `image_source`, then `fetch_images.py fetch --only N` |
 
 ## Project layout

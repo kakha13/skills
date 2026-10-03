@@ -50,6 +50,21 @@
         "Every image_source license is public domain, CC0, CC BY or CC BY-SA",
         "Final message includes image credits"
       ]
+    },
+    {
+      "id": 5,
+      "name": "price-led-product-ad",
+      "prompt": "use codex for images. research how to create an advertisement for our website that includes prices and esims, with our logo at the end",
+      "expected_output": "Agent researches live competitor ads (Meta Ad Library when available) and short-form ad practice, pulls real prices from the user's own catalog and any live promo code, verifies the competitor price in 2+ sources, writes a 6-8 scene ad storyboard (hook with a big number in frame 1, price comparison, price board, ease, payoff, offer, instruction CTA), uses screen_text for prices on phone screens, sets end_logo, generates every image with Codex, reads each screen_text image at full size, renders, and delivers the MP4 plus a ready-to-paste post caption.",
+      "files": [],
+      "assertions": [
+        "Prices shown on screen match the user's catalog at the time of the run",
+        "Scenes with prices use screen_text and the text sits in the upper half of the image",
+        "Every image comes from scripts/gen_images.py (no real-photo fetch needed)",
+        "storyboard.json sets end_logo and the final frame shows the logo at full brightness",
+        "The last scene's caption is an instruction, not a question",
+        "Final message includes a post caption and a reminder to recheck prices"
+      ]
     }
   ]
 }

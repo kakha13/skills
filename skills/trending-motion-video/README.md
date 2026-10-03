@@ -2,6 +2,8 @@
 
 A [Claude Code](https://docs.claude.com/en/docs/claude-code/overview) skill that turns *"what's trending today?"* into a finished, ready-to-post vertical video for **TikTok, Instagram Reels and YouTube Shorts**.
 
+It also makes price-led product ads for your own business: phones showing your real prices, a promo code, and your logo on the end card.
+
 One sentence in, one MP4 out: researched and fact-checked story, real photos where good ones exist, AI images for the rest, word-by-word animated captions, a neural voiceover, and an original soundtrack with sound effects. All the audio is generated in code, so there is nothing to license and nothing for Content ID to flag.
 
 ![Frames from the example video](./assets/example-frames.jpg)
@@ -97,13 +99,16 @@ Everything is driven by one `storyboard.json` in the project folder. See the ful
 
 | Field | Meaning |
 |---|---|
-| `brand`, `accent` | small label at the top; highlight color for key words and labels |
+| `brand`, `accent` | small label at the top (`""` hides it); highlight color for key words and labels |
+| `progress_bar` | story-style progress bars at the top (default `true`) |
+| `end_logo` | `{"path": "logo.png", "at": 3.3, "y": 520, "width": 560, "card": true}`: logo faded in `at` seconds into the last scene, on a white card, kept bright through the final fade |
 | `style` | one art direction shared by every generated image |
 | `voice`, `rate` | any [edge-tts voice](https://github.com/rany2/edge-tts) (`en-US-AriaNeural`, `en-GB-RyanNeural`, ...) and speed |
 | `music` | `mood`: `epic`, `uplifting` or `dark`; `bpm`; `level` (volume under the voice) |
 | `sfx_level` | overall sound-effects volume (default 1.0) |
 | scene `image_query` | 2-4 word search for a real photo |
 | scene `image_prompt` | subject for the AI fallback (no text, no real logos) |
+| scene `screen_text` | exact text Codex may draw (prices on a phone screen, a receipt total); keep it in the upper half, the captions cover the lower third |
 | scene `image_source` | filled in when a real photo is chosen: `url`, `license`, `credit`, `page`; optional `band` (0.8 keeps a wide group shot fully visible) and `rotate` (e.g. 180) |
 | scene `kicker` / `main` / `sub` | label, headline (wrap key phrases in `*asterisks*`), supporting line |
 | scene `vo` | the spoken line; the scene's length follows it |
